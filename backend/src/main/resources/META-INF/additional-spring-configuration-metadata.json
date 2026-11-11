@@ -1,0 +1,21 @@
+{
+  "properties": [
+    {
+      "name": "app.uploads.dir",
+      "type": "java.lang.String",
+      "description": "Carpeta donde se guardan las hojas de vida (PDF). Relativa a la carpeta desde la que se ejecuta el backend.",
+      "defaultValue": "../uploads"
+    },
+    {
+      "name": "app.analista.usuario",
+      "type": "java.lang.String",
+      "description": "Usuario del analista de selección (autenticación HTTP Basic).",
+      "defaultValue": "analista"
+    },
+    {
+      "name": "app.analista.password-hash",
+      "type": "java.lang.String",
+      "description": "Hash BCrypt de la contraseña del analista. Nunca la contraseña en texto plano."
+    }
+  ]
+}

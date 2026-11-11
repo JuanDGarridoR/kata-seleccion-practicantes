@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "practicante")
 public class Practicante {
 
+    /** El esquema lo define schema.sql (id INTEGER PRIMARY KEY AUTOINCREMENT), no Hibernate. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
