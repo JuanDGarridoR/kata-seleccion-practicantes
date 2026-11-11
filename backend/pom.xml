@@ -20,6 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <sqlite-jdbc.version>3.50.3.0</sqlite-jdbc.version>
+        <pdfbox.version>3.0.8</pdfbox.version>
     </properties>
 
     <dependencies>
@@ -49,6 +50,13 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-community-dialects</artifactId>
+        </dependency>
+
+        <!-- Extracción de texto de las hojas de vida en PDF -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
         </dependency>
 
         <!-- Boot 4 separa el soporte de pruebas por módulo (MockMvc y seguridad) -->

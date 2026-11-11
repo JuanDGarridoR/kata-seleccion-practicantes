@@ -24,7 +24,7 @@ public class SecurityConfig {
      * - CSRF deshabilitado porque no hay cookies de sesión que un sitio externo pueda reutilizar.
      * - Spring Security omite el header WWW-Authenticate cuando la petición trae
      *   "X-Requested-With: XMLHttpRequest"; el interceptor de Angular lo envía para que el navegador
-     *   no muestre su ventana nativa de login. Power BI no lo envía y recibe el desafío Basic normal.
+     *   no muestre su ventana nativa de login. Clientes como curl o Postman sí reciben el desafío Basic.
      */
     @Bean
     SecurityFilterChain filtroSeguridad(HttpSecurity http) throws Exception {

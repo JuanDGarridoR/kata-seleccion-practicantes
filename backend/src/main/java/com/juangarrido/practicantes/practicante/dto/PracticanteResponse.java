@@ -4,6 +4,7 @@ import com.juangarrido.practicantes.practicante.EstadoPracticante;
 import com.juangarrido.practicantes.practicante.Practicante;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /** No expone la ruta interna del archivo, solo el nombre original para mostrarlo. */
 public record PracticanteResponse(
@@ -16,7 +17,9 @@ public record PracticanteResponse(
         EstadoPracticante estado,
         String observacion,
         LocalDateTime fechaRegistro,
-        LocalDateTime fechaDecision
+        LocalDateTime fechaDecision,
+        List<String> habilidadesDetectadas,
+        boolean textoExtraible
 ) {
 
     public static PracticanteResponse desde(Practicante p) {
@@ -30,7 +33,10 @@ public record PracticanteResponse(
                 p.getEstado(),
                 p.getObservacion(),
                 p.getFechaRegistro(),
-                p.getFechaDecision()
+                p.getFechaDecision(),
+                // Copia: la colección de la entidad es perezosa y no se puede leer fuera de la transacción.
+                List.copyOf(p.getHabilidadesDetectadas()),
+                p.isTextoExtraible()
         );
     }
 }

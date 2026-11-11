@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  CategoriaHabilidades,
   EstadoPracticante,
   Practicante,
   RegistroPracticante,
@@ -23,9 +24,25 @@ export class PracticanteService {
     return this.http.post<Practicante>(this.base, formulario);
   }
 
-  listar(estado?: EstadoPracticante | null): Observable<Practicante[]> {
-    const params = estado ? new HttpParams().set('estado', estado) : undefined;
+  /** Filtros opcionales y combinables; los que vienen vacíos no se envían. */
+  listar(estado?: EstadoPracticante | null, habilidad?: string | null): Observable<Practicante[]> {
+    let params = new HttpParams();
+    if (estado) params = params.set('estado', estado);
+    if (habilidad) params = params.set('habilidad', habilidad);
     return this.http.get<Practicante[]>(this.base, { params });
+  }
+
+  reanalizar(id: number): Observable<Practicante> {
+    return this.http.post<Practicante>(`${this.base}/${id}/reanalizar`, null);
+  }
+
+  catalogoHabilidades(): Observable<CategoriaHabilidades[]> {
+    return this.http.get<CategoriaHabilidades[]>('/api/habilidades/catalogo');
+  }
+
+  /** Mismo PDF que la descarga, pero con Content-Disposition inline para la vista previa. */
+  verHojaVida(id: number): Observable<Blob> {
+    return this.http.get(`${this.base}/${id}/hoja-vida/vista`, { responseType: 'blob' });
   }
 
   obtener(id: number): Observable<Practicante> {

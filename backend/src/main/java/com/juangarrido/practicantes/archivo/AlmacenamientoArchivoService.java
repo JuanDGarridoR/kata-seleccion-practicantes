@@ -45,11 +45,16 @@ public class AlmacenamientoArchivoService {
     }
 
     public Resource cargar(String nombreGuardado) {
+        return new PathResource(ruta(nombreGuardado));
+    }
+
+    /** Ruta en disco de un archivo guardado; verifica que exista y que no se salga de la carpeta. */
+    public Path ruta(String nombreGuardado) {
         Path ruta = directorio.resolve(nombreGuardado).normalize();
         if (!ruta.startsWith(directorio) || !Files.isRegularFile(ruta)) {
             throw new ArchivoNoEncontradoException(nombreGuardado);
         }
-        return new PathResource(ruta);
+        return ruta;
     }
 
     public void eliminar(String nombreGuardado) {

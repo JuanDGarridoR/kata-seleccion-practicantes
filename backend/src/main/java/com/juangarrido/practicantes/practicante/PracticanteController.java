@@ -45,8 +45,14 @@ public class PracticanteController {
     }
 
     @GetMapping
-    public List<PracticanteResponse> listar(@RequestParam(required = false) EstadoPracticante estado) {
-        return service.listar(estado);
+    public List<PracticanteResponse> listar(@RequestParam(required = false) EstadoPracticante estado,
+                                            @RequestParam(required = false) String habilidad) {
+        return service.listar(estado, (habilidad == null || habilidad.isBlank()) ? null : habilidad.trim());
+    }
+
+    @PostMapping("/{id}/reanalizar")
+    public PracticanteResponse reanalizar(@PathVariable Long id) {
+        return service.reanalizar(id);
     }
 
     @GetMapping("/{id}")
@@ -59,12 +65,22 @@ public class PracticanteController {
         return service.cambiarEstado(id, cambio);
     }
 
+    /** "attachment": el navegador descarga el archivo. */
     @GetMapping("/{id}/hoja-vida")
     public ResponseEntity<Resource> descargarHojaVida(@PathVariable Long id) {
+        return respuestaHojaVida(id, ContentDisposition.attachment());
+    }
+
+    /** "inline": el navegador lo muestra en su visor de PDF (vista previa en el detalle). */
+    @GetMapping("/{id}/hoja-vida/vista")
+    public ResponseEntity<Resource> verHojaVida(@PathVariable Long id) {
+        return respuestaHojaVida(id, ContentDisposition.inline());
+    }
+
+    /** Los dos endpoints solo difieren en el tipo de Content-Disposition. */
+    private ResponseEntity<Resource> respuestaHojaVida(Long id, ContentDisposition.Builder tipo) {
         PracticanteService.HojaVida hojaVida = service.obtenerHojaVida(id);
-        ContentDisposition disposicion = ContentDisposition.attachment()
-                .filename(hojaVida.nombreOriginal(), StandardCharsets.UTF_8)
-                .build();
+        ContentDisposition disposicion = tipo.filename(hojaVida.nombreOriginal(), StandardCharsets.UTF_8).build();
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, disposicion.toString())

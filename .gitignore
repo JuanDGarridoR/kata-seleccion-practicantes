@@ -19,7 +19,3 @@ Thumbs.db
 
 # Carpeta local de archivos por borrar (no se sube)
 _por_borrar/
-
-# Power BI: archivos temporales y de bloqueo
-reports/*.pbix.lock
-reports/~$*

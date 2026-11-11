@@ -13,5 +13,17 @@ CREATE TABLE IF NOT EXISTS practicante (
     estado                    VARCHAR(20)  NOT NULL CHECK (estado IN ('PENDIENTE', 'VIABLE', 'NO_VIABLE')),
     observacion               VARCHAR(500),
     fecha_registro            TIMESTAMP    NOT NULL,
-    fecha_decision            TIMESTAMP
+    fecha_decision            TIMESTAMP,
+    texto_extraible           BOOLEAN      NOT NULL DEFAULT 0
 );
+
+-- Habilidades detectadas en la hoja de vida (@ElementCollection de Practicante).
+-- La PK compuesta evita repetir la misma habilidad para un practicante.
+CREATE TABLE IF NOT EXISTS practicante_habilidad (
+    practicante_id INTEGER     NOT NULL REFERENCES practicante (id),
+    habilidad      VARCHAR(60) NOT NULL,
+    PRIMARY KEY (practicante_id, habilidad)
+);
+
+-- Acelera el filtro "practicantes con la habilidad X".
+CREATE INDEX IF NOT EXISTS idx_practicante_habilidad_habilidad ON practicante_habilidad (habilidad);

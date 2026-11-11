@@ -11,6 +11,15 @@ export interface Practicante {
   observacion: string | null;
   fechaRegistro: string;
   fechaDecision: string | null;
+  /** Nombres visibles del catálogo encontrados en la hoja de vida. */
+  habilidadesDetectadas: string[];
+  /** false si el PDF no tenía texto legible (por ejemplo, un documento escaneado). */
+  textoExtraible: boolean;
+}
+
+export interface CategoriaHabilidades {
+  categoria: string;
+  habilidades: string[];
 }
 
 export interface RegistroPracticante {

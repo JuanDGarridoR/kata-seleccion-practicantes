@@ -43,6 +43,28 @@
   cursor: pointer;
 }
 
+:host ::ng-deep .filtro-habilidad {
+  min-width: 14rem;
+}
+
+.habilidades {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 16rem;
+}
+
+.mas {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-texto-secundario);
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 0.125rem 0.375rem;
+  cursor: help;
+}
+
 .persona {
   display: flex;
   flex-direction: column;

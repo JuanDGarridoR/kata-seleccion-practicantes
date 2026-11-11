@@ -3,7 +3,6 @@ package com.juangarrido.practicantes.reporte;
 import com.juangarrido.practicantes.practicante.EstadoPracticante;
 import com.juangarrido.practicantes.practicante.Practicante;
 import com.juangarrido.practicantes.practicante.PracticanteRepository;
-import com.juangarrido.practicantes.reporte.dto.FilaDatasetResponse;
 import com.juangarrido.practicantes.reporte.dto.ResumenResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,19 +61,6 @@ public class ReporteService {
                 agrupar(todos, Practicante::getSemestre),
                 agrupar(todos, p -> p.getFechaRegistro().toLocalDate().toString())
         );
-    }
-
-    public List<FilaDatasetResponse> dataset() {
-        return repository.findAllByOrderByFechaRegistroDesc().stream()
-                .map(p -> new FilaDatasetResponse(
-                        p.getId(),
-                        p.getCarrera(),
-                        p.getSemestre(),
-                        p.getEstado(),
-                        p.getFechaRegistro(),
-                        p.getFechaDecision(),
-                        diasHastaDecision(p)))
-                .toList();
     }
 
     /** Separador ";" porque Excel en configuración regional es-CO usa la coma como decimal. */

@@ -1,5 +1,7 @@
 package com.juangarrido.practicantes.practicante;
 
+import com.juangarrido.practicantes.analisis.DetectorHabilidades;
+import com.juangarrido.practicantes.analisis.ExtractorTextoPdf;
 import com.juangarrido.practicantes.archivo.AlmacenamientoArchivoService;
 import com.juangarrido.practicantes.practicante.dto.CambioEstadoRequest;
 import com.juangarrido.practicantes.practicante.dto.PracticanteResponse;
@@ -12,7 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,6 +35,12 @@ class PracticanteServiceTest {
     @Mock
     private AlmacenamientoArchivoService almacenamiento;
 
+    @Mock
+    private ExtractorTextoPdf extractor;
+
+    @Mock
+    private DetectorHabilidades detector;
+
     private PracticanteService service;
 
     private final MockMultipartFile pdf =
@@ -37,7 +48,48 @@ class PracticanteServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new PracticanteService(repository, almacenamiento);
+        service = new PracticanteService(repository, almacenamiento, extractor, detector);
+    }
+
+    @Test
+    void registrar_conTextoLegible_guardaLasHabilidadesDetectadas() throws IOException {
+        var datos = new RegistroPracticanteRequest("Ana", "ana@correo.com", "Derecho", 3);
+        Path ruta = Path.of("uploads", "uuid.pdf");
+        when(almacenamiento.guardarPdf(pdf)).thenReturn("uuid.pdf");
+        when(almacenamiento.ruta("uuid.pdf")).thenReturn(ruta);
+        when(extractor.extraer(ruta)).thenReturn("Java y SQL");
+        when(detector.detectar("Java y SQL")).thenReturn(Set.of("Java", "SQL"));
+        when(repository.save(any(Practicante.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        PracticanteResponse respuesta = service.registrar(datos, pdf);
+
+        assertThat(respuesta.textoExtraible()).isTrue();
+        assertThat(respuesta.habilidadesDetectadas()).containsExactlyInAnyOrder("Java", "SQL");
+    }
+
+    @Test
+    void registrar_siNoSePuedeLeerElPdf_igualRegistraSinHabilidades() throws IOException {
+        var datos = new RegistroPracticanteRequest("Ana", "ana@correo.com", "Derecho", 3);
+        when(almacenamiento.guardarPdf(pdf)).thenReturn("uuid.pdf");
+        when(extractor.extraer(any())).thenThrow(new IOException("PDF dañado"));
+        when(repository.save(any(Practicante.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        PracticanteResponse respuesta = service.registrar(datos, pdf);
+
+        assertThat(respuesta.textoExtraible()).isFalse();
+        assertThat(respuesta.habilidadesDetectadas()).isEmpty();
+        verify(almacenamiento, never()).eliminar(any());
+    }
+
+    @Test
+    void registrar_conPdfSinTexto_marcaTextoNoExtraible() throws IOException {
+        var datos = new RegistroPracticanteRequest("Ana", "ana@correo.com", "Derecho", 3);
+        when(almacenamiento.guardarPdf(pdf)).thenReturn("uuid.pdf");
+        when(extractor.extraer(any())).thenReturn("  \n ");
+        when(repository.save(any(Practicante.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertThat(service.registrar(datos, pdf).textoExtraible()).isFalse();
+        verify(detector, never()).detectar(any());
     }
 
     @Test

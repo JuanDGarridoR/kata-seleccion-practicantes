@@ -18,6 +18,11 @@
         <p-selectButton [options]="opcionesFiltro" [(ngModel)]="filtroEstado" optionLabel="etiqueta"
                         optionValue="valor" [allowEmpty]="false" (onChange)="cargar()"
                         ariaLabelledBy="Filtrar por estado" />
+        <p-select [options]="opcionesHabilidad()" [(ngModel)]="filtroHabilidad" [group]="true"
+                  optionGroupLabel="categoria" optionGroupChildren="habilidades"
+                  optionLabel="nombre" optionValue="nombre" [filter]="true" filterPlaceholder="Buscar habilidad"
+                  [showClear]="true" placeholder="Todas las habilidades" (onChange)="cargar()"
+                  ariaLabel="Filtrar por habilidad" styleClass="filtro-habilidad" />
         <p-iconfield iconPosition="left" class="buscador">
           <p-inputicon styleClass="pi pi-search" />
           <input pInputText type="text" placeholder="Buscar por nombre, correo o carrera"
@@ -30,6 +35,7 @@
       <tr>
         <th pSortableColumn="nombreCompleto">Practicante <p-sortIcon field="nombreCompleto" /></th>
         <th pSortableColumn="carrera">Carrera <p-sortIcon field="carrera" /></th>
+        <th>Habilidades</th>
         <th pSortableColumn="semestre" class="centrado">Semestre <p-sortIcon field="semestre" /></th>
         <th pSortableColumn="fechaRegistro">Registro <p-sortIcon field="fechaRegistro" /></th>
         <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
@@ -46,6 +52,22 @@
           </div>
         </td>
         <td>{{ p.carrera }}</td>
+        <td>
+          @let resumen = resumenHabilidades(p.habilidadesDetectadas);
+          <div class="habilidades">
+            @for (habilidad of resumen.visibles; track habilidad) {
+              <p-tag [value]="habilidad" severity="secondary" />
+            }
+            @if (resumen.restantes.length > 0) {
+              <span class="mas" [title]="resumen.restantes.join(', ')">+{{ resumen.restantes.length }}</span>
+            }
+            @if (!p.textoExtraible) {
+              <span class="texto-tenue" title="No fue posible leer el texto de la hoja de vida">Sin texto</span>
+            } @else if (resumen.visibles.length === 0) {
+              <span class="texto-tenue">—</span>
+            }
+          </div>
+        </td>
         <td class="centrado">{{ p.semestre }}</td>
         <td>{{ p.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</td>
         <td>
@@ -61,7 +83,7 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="6">
+        <td colspan="7">
           <div class="vacio">
             @if (error()) {
               <i class="pi pi-exclamation-triangle"></i>

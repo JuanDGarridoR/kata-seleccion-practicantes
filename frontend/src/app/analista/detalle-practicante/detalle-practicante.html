@@ -31,9 +31,36 @@
       <div class="archivo">
         <i class="pi pi-file-pdf"></i>
         <span class="nombre-archivo">{{ p.nombreHojaVida }}</span>
+        <p-button label="Ver" icon="pi pi-eye" size="small" (onClick)="abrirVista()" />
         <p-button label="Descargar" icon="pi pi-download" [outlined]="true" size="small"
                   [loading]="descargando()" (onClick)="descargarHojaVida()" />
       </div>
+
+      <div class="titulo-habilidades">
+        <h3>Habilidades detectadas</h3>
+        <p-button label="Reanalizar" icon="pi pi-refresh" [text]="true" size="small"
+                  [loading]="reanalizando()" (onClick)="reanalizar()" />
+      </div>
+
+      @if (!p.textoExtraible) {
+        <p-message severity="warn" icon="pi pi-exclamation-triangle" styleClass="w-full"
+                   text="No fue posible leer el texto de la hoja de vida (posiblemente es un documento escaneado)." />
+      } @else if (habilidadesPorCategoria().length === 0) {
+        <p class="texto-tenue">No se encontraron habilidades del catálogo en la hoja de vida.</p>
+      } @else {
+        <div class="habilidades">
+          @for (grupo of habilidadesPorCategoria(); track grupo.categoria) {
+            <div class="grupo-habilidades">
+              <span class="categoria">{{ grupo.categoria }}</span>
+              <div class="etiquetas">
+                @for (habilidad of grupo.habilidades; track habilidad) {
+                  <p-tag [value]="habilidad" severity="secondary" />
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
     </section>
 
     <section class="tarjeta decision">
@@ -76,3 +103,24 @@
     <p-skeleton width="100%" height="10rem" />
   </section>
 }
+
+<p-dialog [visible]="vistaVisible()" (visibleChange)="alCambiarVisibilidad($event)" [modal]="true" [draggable]="false"
+          [dismissableMask]="true" [header]="practicante()?.nombreHojaVida ?? 'Hoja de vida'"
+          styleClass="dialogo-vista" [style]="{ width: 'min(1000px, 95vw)' }">
+  <div class="contenedor-vista">
+    @if (cargandoVista()) {
+      <div class="estado-vista">
+        <p-progressSpinner strokeWidth="4" ariaLabel="Cargando hoja de vida" />
+        <span class="texto-tenue">Cargando hoja de vida…</span>
+      </div>
+    } @else if (errorVista()) {
+      <div class="estado-vista">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>No se pudo cargar la hoja de vida.</span>
+        <p-button label="Reintentar" icon="pi pi-refresh" [outlined]="true" size="small" (onClick)="abrirVista()" />
+      </div>
+    } @else if (urlVista(); as url) {
+      <iframe [src]="url" title="Vista previa de la hoja de vida"></iframe>
+    }
+  </div>
+</p-dialog>

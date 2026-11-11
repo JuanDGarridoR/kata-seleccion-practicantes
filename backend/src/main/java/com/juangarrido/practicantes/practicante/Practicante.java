@@ -1,16 +1,23 @@
 package com.juangarrido.practicantes.practicante;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "practicante")
@@ -51,6 +58,20 @@ public class Practicante {
 
     private LocalDateTime fechaDecision;
 
+    /**
+     * Nombres visibles del catálogo (ej. "Java", "Inglés") encontrados en la hoja de vida.
+     * @OrderBy: un Set leído de la BD no tiene orden; así la API siempre las devuelve alfabéticas.
+     */
+    @ElementCollection
+    @CollectionTable(name = "practicante_habilidad", joinColumns = @JoinColumn(name = "practicante_id"))
+    @Column(name = "habilidad", nullable = false, length = 60)
+    @OrderBy
+    private Set<String> habilidadesDetectadas = new LinkedHashSet<>();
+
+    /** false si el PDF no se pudo leer o no tenía texto (por ejemplo, un documento escaneado). */
+    @Column(nullable = false)
+    private boolean textoExtraible;
+
     protected Practicante() {
         // requerido por JPA
     }
@@ -84,6 +105,13 @@ public class Practicante {
         this.fechaDecision = LocalDateTime.now();
     }
 
+    /** Reemplaza el resultado anterior: se usa al registrar y al reanalizar. */
+    public void registrarAnalisis(boolean textoExtraible, Set<String> habilidades) {
+        this.textoExtraible = textoExtraible;
+        this.habilidadesDetectadas.clear();
+        this.habilidadesDetectadas.addAll(habilidades);
+    }
+
     public Long getId() { return id; }
     public String getNombreCompleto() { return nombreCompleto; }
     public String getCorreo() { return correo; }
@@ -95,4 +123,6 @@ public class Practicante {
     public String getObservacion() { return observacion; }
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public LocalDateTime getFechaDecision() { return fechaDecision; }
+    public Set<String> getHabilidadesDetectadas() { return Collections.unmodifiableSet(habilidadesDetectadas); }
+    public boolean isTextoExtraible() { return textoExtraible; }
 }
