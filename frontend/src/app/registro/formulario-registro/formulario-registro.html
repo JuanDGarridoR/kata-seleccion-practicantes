@@ -1,0 +1,113 @@
+<div class="pagina">
+  <aside class="presentacion">
+    <div class="marca">
+      <span class="logo"><i class="pi pi-briefcase"></i></span>
+      <span>Talento Practicantes</span>
+    </div>
+
+    <div class="mensaje">
+      <h1>Postúlate al programa de prácticas</h1>
+      <p>Comparte tus datos y tu hoja de vida. Nuestro equipo de selección revisará tu perfil.</p>
+    </div>
+
+    <ol class="pasos">
+      <li><span>1</span> Completa tus datos básicos</li>
+      <li><span>2</span> Adjunta tu hoja de vida en PDF</li>
+      <li><span>3</span> Un analista revisa tu postulación</li>
+    </ol>
+
+    <a routerLink="/analista/login" class="enlace-analista">
+      <i class="pi pi-lock"></i> Ingreso para analistas
+    </a>
+  </aside>
+
+  <main class="contenido">
+    @if (registrado(); as nombre) {
+      <section class="tarjeta exito" aria-live="polite">
+        <span class="icono-exito"><i class="pi pi-check"></i></span>
+        <h2>¡Registro recibido, {{ nombre }}!</h2>
+        <p class="texto-secundario">
+          Tu información y tu hoja de vida quedaron guardadas. El equipo de selección revisará tu perfil.
+        </p>
+        <p-button label="Registrar otro practicante" icon="pi pi-user-plus" [outlined]="true" (onClick)="registrarOtro()" />
+      </section>
+    } @else {
+      <form class="tarjeta formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+        <header>
+          <h2>Formulario de registro</h2>
+          <p class="texto-tenue">Todos los campos son obligatorios.</p>
+        </header>
+
+        <div class="campo">
+          <label for="nombreCompleto">Nombre completo</label>
+          <input pInputText id="nombreCompleto" formControlName="nombreCompleto" autocomplete="name"
+                 placeholder="Ej. Ana María Pérez" [attr.aria-invalid]="!!error('nombreCompleto')" aria-describedby="error-nombre" />
+          @if (error('nombreCompleto'); as mensaje) {
+            <small class="error" id="error-nombre"><i class="pi pi-exclamation-circle"></i>{{ mensaje }}</small>
+          }
+        </div>
+
+        <div class="campo">
+          <label for="correo">Correo electrónico</label>
+          <input pInputText id="correo" type="email" formControlName="correo" autocomplete="email"
+                 placeholder="nombre@correo.com" [attr.aria-invalid]="!!error('correo')" aria-describedby="error-correo" />
+          @if (error('correo'); as mensaje) {
+            <small class="error" id="error-correo"><i class="pi pi-exclamation-circle"></i>{{ mensaje }}</small>
+          }
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="carrera">Carrera universitaria</label>
+            <p-select inputId="carrera" formControlName="carrera" [options]="carreras" [editable]="true"
+                      placeholder="Selecciona o escribe" styleClass="w-full" />
+            @if (error('carrera'); as mensaje) {
+              <small class="error"><i class="pi pi-exclamation-circle"></i>{{ mensaje }}</small>
+            } @else {
+              <small class="ayuda">Si no aparece en la lista, escríbela.</small>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="semestre">Semestre actual</label>
+            <p-select inputId="semestre" formControlName="semestre" [options]="semestres"
+                      optionLabel="etiqueta" optionValue="valor" placeholder="Selecciona" styleClass="w-full" />
+            @if (error('semestre'); as mensaje) {
+              <small class="error"><i class="pi pi-exclamation-circle"></i>{{ mensaje }}</small>
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <span class="etiqueta" id="etiqueta-hv">Hoja de vida (PDF, máx. 5 MB)</span>
+          @if (formulario.controls.hojaVida.value; as archivo) {
+            <div class="archivo-seleccionado" [class.invalido]="error('hojaVida')">
+              <i class="pi pi-file-pdf"></i>
+              <div class="datos-archivo">
+                <strong>{{ archivo.name }}</strong>
+                <span class="texto-tenue">{{ tamanoLegible(archivo.size) }}</span>
+              </div>
+              <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="secondary"
+                        ariaLabel="Quitar archivo" (onClick)="quitarArchivo()" />
+            </div>
+          } @else {
+            <label class="zona-archivo" [class.activa]="arrastrando()" [class.invalido]="error('hojaVida')"
+                   (dragover)="$event.preventDefault(); arrastrando.set(true)"
+                   (dragleave)="arrastrando.set(false)" (drop)="alSoltarArchivo($event)"
+                   aria-labelledby="etiqueta-hv">
+              <i class="pi pi-cloud-upload"></i>
+              <span><strong>Haz clic para seleccionar</strong> o arrastra tu PDF aquí</span>
+              <input type="file" accept="application/pdf,.pdf" (change)="alSeleccionarArchivo($event)" />
+            </label>
+          }
+          @if (error('hojaVida'); as mensaje) {
+            <small class="error"><i class="pi pi-exclamation-circle"></i>{{ mensaje }}</small>
+          }
+        </div>
+
+        <p-button type="submit" label="Enviar registro" icon="pi pi-send" styleClass="w-full"
+                  [loading]="enviando()" />
+      </form>
+    }
+  </main>
+</div>

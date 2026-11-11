@@ -1,0 +1,78 @@
+<a routerLink="/analista/practicantes" class="volver"><i class="pi pi-arrow-left"></i> Volver a la lista</a>
+
+@if (noEncontrado()) {
+  <section class="tarjeta vacio">
+    <i class="pi pi-user-minus"></i>
+    <h2>No encontramos este practicante</h2>
+    <p class="texto-tenue">Es posible que el enlace sea incorrecto.</p>
+  </section>
+} @else if (practicante(); as p) {
+  <header class="encabezado">
+    <span class="iniciales">{{ p.nombreCompleto.charAt(0) }}</span>
+    <div>
+      <h1>{{ p.nombreCompleto }}</h1>
+      <p class="texto-tenue">Registrado el {{ p.fechaRegistro | date: "dd/MM/yyyy 'a las' HH:mm" }}</p>
+    </div>
+    <p-tag [value]="estados[p.estado].texto" [severity]="estados[p.estado].severidad"
+           [icon]="estados[p.estado].icono" [rounded]="true" class="estado" />
+  </header>
+
+  <div class="rejilla">
+    <section class="tarjeta">
+      <h2>Información del candidato</h2>
+      <dl class="datos">
+        <div><dt>Correo electrónico</dt><dd><a [href]="'mailto:' + p.correo">{{ p.correo }}</a></dd></div>
+        <div><dt>Carrera</dt><dd>{{ p.carrera }}</dd></div>
+        <div><dt>Semestre actual</dt><dd>{{ p.semestre }}° semestre</dd></div>
+        <div><dt>Fecha de registro</dt><dd>{{ p.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</dd></div>
+      </dl>
+
+      <h3>Hoja de vida</h3>
+      <div class="archivo">
+        <i class="pi pi-file-pdf"></i>
+        <span class="nombre-archivo">{{ p.nombreHojaVida }}</span>
+        <p-button label="Descargar" icon="pi pi-download" [outlined]="true" size="small"
+                  [loading]="descargando()" (onClick)="descargarHojaVida()" />
+      </div>
+    </section>
+
+    <section class="tarjeta decision">
+      <h2>Decisión del analista</h2>
+
+      @if (p.fechaDecision) {
+        <div class="decision-actual">
+          <p-tag [value]="estados[p.estado].texto" [severity]="estados[p.estado].severidad"
+                 [icon]="estados[p.estado].icono" />
+          <span class="texto-tenue">el {{ p.fechaDecision | date: 'dd/MM/yyyy HH:mm' }}</span>
+          @if (p.observacion) {
+            <blockquote>{{ p.observacion }}</blockquote>
+          }
+        </div>
+        <p class="texto-tenue">Puedes cambiar la decisión si es necesario.</p>
+      } @else {
+        <p class="texto-secundario">Este candidato aún no ha sido evaluado.</p>
+      }
+
+      <div class="campo">
+        <label for="observacion">Observación <span class="texto-tenue">(opcional)</span></label>
+        <textarea pTextarea id="observacion" rows="4" maxlength="500" [(ngModel)]="observacion"
+                  placeholder="Motivo de la decisión, fortalezas, aspectos a revisar…"></textarea>
+        <small class="ayuda">{{ observacion.length }}/500</small>
+      </div>
+
+      <div class="acciones">
+        <p-button label="Viable" icon="pi pi-check" severity="success" styleClass="w-full"
+                  [loading]="guardando() === 'VIABLE'" [disabled]="guardando() !== null"
+                  (onClick)="decidir('VIABLE')" />
+        <p-button label="No viable" icon="pi pi-times" severity="danger" [outlined]="true" styleClass="w-full"
+                  [loading]="guardando() === 'NO_VIABLE'" [disabled]="guardando() !== null"
+                  (onClick)="decidir('NO_VIABLE')" />
+      </div>
+    </section>
+  </div>
+} @else {
+  <section class="tarjeta">
+    <p-skeleton width="40%" height="2rem" styleClass="mb" />
+    <p-skeleton width="100%" height="10rem" />
+  </section>
+}

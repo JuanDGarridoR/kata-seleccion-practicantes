@@ -1,0 +1,78 @@
+<header class="encabezado">
+  <div>
+    <h1>Practicantes registrados</h1>
+    <p class="texto-tenue">Revisa los perfiles y marca cada candidato como viable o no viable.</p>
+  </div>
+  <p-button icon="pi pi-refresh" label="Actualizar" [outlined]="true" severity="secondary"
+            [loading]="cargando()" (onClick)="cargar()" />
+</header>
+
+<section class="tarjeta">
+  <p-table #tabla [value]="practicantes()" [loading]="cargando()" [paginator]="true" [rows]="10"
+           [rowsPerPageOptions]="[10, 25, 50]" dataKey="id" [rowHover]="true"
+           [globalFilterFields]="['nombreCompleto', 'correo', 'carrera']"
+           currentPageReportTemplate="{first}–{last} de {totalRecords}" [showCurrentPageReport]="true"
+           responsiveLayout="scroll">
+    <ng-template #caption>
+      <div class="controles">
+        <p-selectButton [options]="opcionesFiltro" [(ngModel)]="filtroEstado" optionLabel="etiqueta"
+                        optionValue="valor" [allowEmpty]="false" (onChange)="cargar()"
+                        ariaLabelledBy="Filtrar por estado" />
+        <p-iconfield iconPosition="left" class="buscador">
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" placeholder="Buscar por nombre, correo o carrera"
+                 (input)="tabla.filterGlobal($any($event.target).value, 'contains')" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="nombreCompleto">Practicante <p-sortIcon field="nombreCompleto" /></th>
+        <th pSortableColumn="carrera">Carrera <p-sortIcon field="carrera" /></th>
+        <th pSortableColumn="semestre" class="centrado">Semestre <p-sortIcon field="semestre" /></th>
+        <th pSortableColumn="fechaRegistro">Registro <p-sortIcon field="fechaRegistro" /></th>
+        <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
+        <th><span class="oculto">Acciones</span></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-p>
+      <tr class="fila" (click)="verDetalle(p)">
+        <td>
+          <div class="persona">
+            <strong>{{ p.nombreCompleto }}</strong>
+            <span class="texto-tenue">{{ p.correo }}</span>
+          </div>
+        </td>
+        <td>{{ p.carrera }}</td>
+        <td class="centrado">{{ p.semestre }}</td>
+        <td>{{ p.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          @let estado = infoEstado(p.estado);
+          <p-tag [value]="estado.texto" [severity]="estado.severidad" [icon]="estado.icono" [rounded]="true" />
+        </td>
+        <td class="derecha">
+          <p-button icon="pi pi-chevron-right" [text]="true" [rounded]="true" severity="secondary"
+                    [ariaLabel]="'Ver detalle de ' + p.nombreCompleto" />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6">
+          <div class="vacio">
+            @if (error()) {
+              <i class="pi pi-exclamation-triangle"></i>
+              <span>No se pudo cargar la lista. Intenta actualizar.</span>
+            } @else {
+              <i class="pi pi-inbox"></i>
+              <span>No hay practicantes para mostrar.</span>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

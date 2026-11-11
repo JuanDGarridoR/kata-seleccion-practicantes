@@ -1,0 +1,22 @@
+# --- Backend (Maven) ---
+backend/target/
+
+# Build de Angular copiado al backend: se genera con `npm run build`
+backend/src/main/resources/static/
+
+# --- Datos en tiempo de ejecución (contienen datos personales) ---
+data/*
+!data/.gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# --- IDEs / SO ---
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Power BI: archivos temporales y de bloqueo
+reports/*.pbix.lock
+reports/~$*

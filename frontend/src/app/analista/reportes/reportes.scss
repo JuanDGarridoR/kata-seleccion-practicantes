@@ -1,0 +1,146 @@
+.encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.kpi-icono {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  background: #eef4fb;
+  color: var(--app-primario);
+  display: grid;
+  place-items: center;
+}
+
+.kpi-titulo {
+  font-weight: 500;
+  color: var(--app-texto-secundario);
+  padding-right: 2.75rem;
+}
+
+.kpi-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0.25rem;
+  font-variant-numeric: tabular-nums;
+
+  small {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--app-texto-secundario);
+  }
+}
+
+.graficas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.grafica h2 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lienzo {
+  height: 280px;
+  position: relative;
+}
+
+.power-bi {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  background: #f8fafc;
+  box-shadow: none;
+
+  > i {
+    font-size: 1.5rem;
+    color: var(--app-primario);
+    margin-top: 0.125rem;
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+  }
+
+  code {
+    background: #e2e8f0;
+    padding: 0.0625rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+  }
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--app-texto-tenue);
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  i {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .graficas {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+}

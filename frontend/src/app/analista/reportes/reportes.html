@@ -1,0 +1,109 @@
+<header class="encabezado">
+  <div>
+    <h1>Reportes del proceso</h1>
+    <p class="texto-tenue">Indicadores del proceso de selección en tiempo real.</p>
+  </div>
+  <div class="acciones">
+    <p-button icon="pi pi-refresh" label="Actualizar" [outlined]="true" severity="secondary" (onClick)="cargar()" />
+    <p-button icon="pi pi-file-export" label="Exportar CSV" [loading]="exportando()" (onClick)="exportarCsv()" />
+  </div>
+</header>
+
+@if (error()) {
+  <section class="tarjeta vacio">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>No se pudieron cargar los reportes.</span>
+  </section>
+} @else if (resumen(); as r) {
+  <section class="kpis">
+    <article class="tarjeta kpi">
+      <span class="kpi-icono"><i class="pi pi-users"></i></span>
+      <span class="kpi-titulo">Total registrados</span>
+      <strong class="kpi-valor">{{ r.total }}</strong>
+      <span class="texto-tenue">practicantes en el proceso</span>
+    </article>
+
+    <article class="tarjeta kpi">
+      <span class="kpi-icono"><i class="pi pi-clock"></i></span>
+      <span class="kpi-titulo">Pendientes</span>
+      <strong class="kpi-valor">{{ r.pendientes }}</strong>
+      <span class="texto-tenue">por revisar</span>
+    </article>
+
+    <article class="tarjeta kpi">
+      <span class="kpi-icono"><i class="pi pi-percentage"></i></span>
+      <span class="kpi-titulo">Tasa de viabilidad</span>
+      <strong class="kpi-valor">
+        @if (r.tasaViabilidad !== null) { {{ r.tasaViabilidad | number: '1.0-1' }}% } @else { — }
+      </strong>
+      <span class="texto-tenue">{{ r.viables }} viables de {{ r.viables + r.noViables }} decididos</span>
+    </article>
+
+    <article class="tarjeta kpi">
+      <span class="kpi-icono"><i class="pi pi-stopwatch"></i></span>
+      <span class="kpi-titulo">Tiempo promedio de decisión</span>
+      <strong class="kpi-valor">
+        @if (r.promedioDiasDecision !== null) { {{ r.promedioDiasDecision | number: '1.0-2' }} <small>días</small> } @else { — }
+      </strong>
+      <span class="texto-tenue">desde el registro hasta la decisión</span>
+    </article>
+  </section>
+
+  @if (r.total === 0) {
+    <section class="tarjeta vacio">
+      <i class="pi pi-chart-bar"></i>
+      <span>Aún no hay registros. Las gráficas aparecerán cuando se registre el primer practicante.</span>
+    </section>
+  } @else {
+    <section class="graficas">
+      <article class="tarjeta grafica">
+        <h2>Estado de los candidatos</h2>
+        <div class="lienzo">
+          <p-chart type="doughnut" [data]="datosEstados()" [options]="opcionesDona" height="100%"
+                   ariaLabel="Distribución de candidatos por estado" />
+        </div>
+      </article>
+
+      <article class="tarjeta grafica">
+        <h2>Practicantes por carrera</h2>
+        <div class="lienzo">
+          <p-chart type="bar" [data]="datosCarrera()" [options]="opcionesBarrasHorizontales" height="100%"
+                   ariaLabel="Número de practicantes por carrera" />
+        </div>
+      </article>
+
+      <article class="tarjeta grafica">
+        <h2>Distribución por semestre</h2>
+        <div class="lienzo">
+          <p-chart type="bar" [data]="datosSemestre()" [options]="opcionesBarras" height="100%"
+                   ariaLabel="Número de practicantes por semestre" />
+        </div>
+      </article>
+
+      <article class="tarjeta grafica">
+        <h2>Registros por fecha</h2>
+        <div class="lienzo">
+          <p-chart type="line" [data]="datosFechas()" [options]="opcionesLinea" height="100%"
+                   ariaLabel="Registros de practicantes por fecha" />
+        </div>
+      </article>
+    </section>
+  }
+
+  <aside class="tarjeta power-bi">
+    <i class="pi pi-chart-line"></i>
+    <div>
+      <strong>Análisis avanzado en Power BI</strong>
+      <p class="texto-secundario">
+        Power BI Desktop se conecta a <code>/api/reportes/dataset</code> con el conector Web y autenticación
+        básica. El dataset no incluye nombres ni correos. Los pasos están en el README.
+      </p>
+    </div>
+  </aside>
+} @else {
+  <section class="kpis">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <p-skeleton height="8.5rem" borderRadius="12px" />
+    }
+  </section>
+}

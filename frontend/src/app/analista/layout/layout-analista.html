@@ -1,0 +1,31 @@
+<header class="barra-superior">
+  <p-button icon="pi pi-bars" [text]="true" severity="secondary" styleClass="boton-menu"
+            ariaLabel="Abrir menú" (onClick)="menuAbierto.set(!menuAbierto())" />
+  <a routerLink="/analista/practicantes" class="marca">
+    <span class="logo"><i class="pi pi-briefcase"></i></span>
+    <span>Talento Practicantes</span>
+  </a>
+  <div class="usuario">
+    <span class="avatar"><i class="pi pi-user"></i></span>
+    <span class="nombre">{{ auth.usuario() }}</span>
+    <p-button icon="pi pi-sign-out" label="Salir" [text]="true" severity="secondary" (onClick)="auth.cerrarSesion()" />
+  </div>
+</header>
+
+<div class="cuerpo">
+  <nav class="menu" [class.abierto]="menuAbierto()" aria-label="Menú principal">
+    <span class="seccion">Selección</span>
+    @for (opcion of opciones; track opcion.ruta) {
+      <a [routerLink]="opcion.ruta" routerLinkActive="activo" (click)="menuAbierto.set(false)">
+        <i [class]="opcion.icono"></i>{{ opcion.etiqueta }}
+      </a>
+    }
+  </nav>
+  @if (menuAbierto()) {
+    <div class="velo" (click)="menuAbierto.set(false)"></div>
+  }
+
+  <main class="contenido">
+    <router-outlet />
+  </main>
+</div>
